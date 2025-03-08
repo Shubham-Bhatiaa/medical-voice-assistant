@@ -2,9 +2,9 @@ streamlit
 torch
 torchaudio
 transformers
-g4f
 pyaudio
 pyttsx3
 wave
+
 
 

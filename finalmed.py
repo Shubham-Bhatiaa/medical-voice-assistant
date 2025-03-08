@@ -12,7 +12,7 @@ import subprocess
 import asyncio
 import nest_asyncio
 from gtts import gTTS
-
+pip install --upgrade pip
 
 
 try:

@@ -1,5 +1,5 @@
 streamlit
-torch==1.13.0
+torch==2.2.0
 torchaudio
 transformers
 pyaudio
@@ -8,5 +8,4 @@ wave
 g4f
 nest_asyncio
 gTTS
-
-
+pip==25.0.1

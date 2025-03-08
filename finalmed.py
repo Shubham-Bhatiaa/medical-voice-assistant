@@ -11,7 +11,7 @@ import os
 import subprocess
 import asyncio
 import nest_asyncio
-
+from gtts import gTTS
 
 
 
@@ -103,9 +103,9 @@ def get_medical_response(prompt):
 
 # Function to speak using Pyttsx3
 def speak(text):
-    engine = pyttsx3.init()
-    engine.say(text)
-    engine.runAndWait()
+    tts = gTTS(text=text, lang='en')
+    tts.save("output.mp3")
+    os.system("mpg321 output.mp3")
 
 # Chat Interface
 for msg in st.session_state.messages:

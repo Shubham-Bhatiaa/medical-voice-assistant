@@ -6,6 +6,7 @@ pyaudio
 pyttsx3
 wave
 g4f
+nest_asyncio
 
 
 

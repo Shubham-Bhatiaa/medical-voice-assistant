@@ -13,15 +13,17 @@ import asyncio
 import nest_asyncio
 from gtts import gTTS
 pip install --upgrade pip
+pip install --upgrade streamlit
 
 
+nest_asyncio.apply()  # This helps run Streamlit and asyncio concurrently
 try:
     from transformers import WhisperProcessor, WhisperForConditionalGeneration
 except ImportError:
     subprocess.run(["pip", "install", "transformers"])
     from transformers import WhisperProcessor, WhisperForConditionalGeneration
 
-nest_asyncio.apply()  # This helps run Streamlit and asyncio concurrently
+
 # Load Whisper Model
 device = "cpu"  # Force CPU usage
 

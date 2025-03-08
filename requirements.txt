@@ -1,0 +1,13 @@
+speechrecognition
+pyttsx3
+openai
+numpy
+pandas
+jupyter
+transformers
+g4f
+pyaudio
+torch
+streamlit
+torchaudio
+wave

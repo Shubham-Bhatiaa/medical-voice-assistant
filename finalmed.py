@@ -6,13 +6,10 @@ import g4f
 import wave
 import pyaudio
 import os
-import pyttsx3
-import os
 import subprocess
 import asyncio
 import nest_asyncio
 from gtts import gTTS
-
 
 nest_asyncio.apply()  # This helps run Streamlit and asyncio concurrently
 try:
@@ -40,7 +37,7 @@ if "messages" not in st.session_state:
 
 # Streamlit App UI
 st.title("🧑‍⚕️ Medical Voice Assistant")
-st.write("###  Powered by Whisper, g4f, and Pyttsx3")
+st.write("### Powered by Whisper, g4f, and gTTS")
 
 # Function to record audio
 def record_audio(filename="input.wav", duration=4, rate=16000):
@@ -101,11 +98,12 @@ def get_medical_response(prompt):
     output = medical_model.generate(**inputs, max_length=200)
     return tokenizer.decode(output[0], skip_special_tokens=True)
 
-# Function to speak using Pyttsx3
+# Function to speak using gTTS (Text-to-Speech)
 def speak(text):
     tts = gTTS(text=text, lang='en')
-    tts.save("output.mp3")
-    os.system("mpg321 output.mp3")
+    tts.save("output.mp3")  # Save the audio as an MP3 file
+    st.audio("output.mp3", format="audio/mp3")  # Play the audio file in the browser
+    os.remove("output.mp3")  # Clean up the file after use
 
 # Chat Interface
 for msg in st.session_state.messages:
@@ -147,6 +145,7 @@ if st.button("🎙️ Speak"):
 
     # Speak AI response
     speak(ai_response)
+
 st.markdown(
     """
     <style>
@@ -163,3 +162,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+

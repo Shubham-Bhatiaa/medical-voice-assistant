@@ -1,5 +1,5 @@
 streamlit
-torch==2.1.0 
+torch==1.13.0
 torchaudio
 transformers
 pyaudio

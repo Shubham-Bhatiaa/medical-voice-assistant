@@ -7,6 +7,15 @@ import wave
 import pyaudio
 import os
 import pyttsx3
+import os
+import subprocess
+
+try:
+    from transformers import WhisperProcessor, WhisperForConditionalGeneration
+except ImportError:
+    subprocess.run(["pip", "install", "transformers"])
+    from transformers import WhisperProcessor, WhisperForConditionalGeneration
+
 
 # Load Whisper Model
 device = "cpu"  # Force CPU usage

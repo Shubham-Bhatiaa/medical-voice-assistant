@@ -12,8 +12,6 @@ import subprocess
 import asyncio
 import nest_asyncio
 from gtts import gTTS
-pip install --upgrade pip
-pip install --upgrade streamlit
 
 
 nest_asyncio.apply()  # This helps run Streamlit and asyncio concurrently

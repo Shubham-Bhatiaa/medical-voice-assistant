@@ -9,6 +9,11 @@ import os
 import pyttsx3
 import os
 import subprocess
+import asyncio
+import nest_asyncio
+
+
+
 
 try:
     from transformers import WhisperProcessor, WhisperForConditionalGeneration
@@ -16,7 +21,7 @@ except ImportError:
     subprocess.run(["pip", "install", "transformers"])
     from transformers import WhisperProcessor, WhisperForConditionalGeneration
 
-
+nest_asyncio.apply()  # This helps run Streamlit and asyncio concurrently
 # Load Whisper Model
 device = "cpu"  # Force CPU usage
 

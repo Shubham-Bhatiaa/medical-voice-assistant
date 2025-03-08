@@ -9,14 +9,16 @@ import os
 import pyttsx3
 
 # Load Whisper Model
+device = "cpu"  # Force CPU usage
+
 whisper_model_name = "openai/whisper-tiny"
 processor = WhisperProcessor.from_pretrained(whisper_model_name)
-whisper_model = WhisperForConditionalGeneration.from_pretrained(whisper_model_name)
+whisper_model = WhisperForConditionalGeneration.from_pretrained(whisper_model_name).to(device)
 
 # Load Medical AI Model
 medical_model_name = "stanford-crfm/BioMedLM"
 tokenizer = AutoTokenizer.from_pretrained(medical_model_name)
-medical_model = AutoModelForCausalLM.from_pretrained(medical_model_name)
+medical_model = AutoModelForCausalLM.from_pretrained(medical_model_name).to(device)
 
 # Memory for conversation history
 if "messages" not in st.session_state:

@@ -1,8 +1,9 @@
+--upgrade --force-reinstall
 numpy<2.0
 streamlit
 torch==2.2.0
 torchaudio
-transformers==4.38.2 
+transformers 
 pyaudio
 pyttsx3
 wave

@@ -9,7 +9,8 @@ import os
 import subprocess
 import asyncio
 import nest_asyncio
-from gtts import gTTS  # ✅ gTTS for text-to-speech (Replaces pyttsx3)
+from gtts import gTTS 
+import pygame
 
 nest_asyncio.apply()  # Allows asyncio to work in Streamlit
 
@@ -109,12 +110,47 @@ def get_medical_response(prompt):
     output = medical_model.generate(**inputs, max_length=200)
     return tokenizer.decode(output[0], skip_special_tokens=True)
 
-# Function to speak using gTTS (Text-to-Speech)
+
+import os
+import time
+import pygame
+from gtts import gTTS
+
+# Initialize pygame mixer
+pygame.mixer.init()
+
 def speak(text):
+    filename = "output.mp3"
+
+    # If the file exists, try removing it before creating a new one
+    if os.path.exists(filename):
+        os.remove(filename)
+
+    # Generate speech and save it as an mp3 file
     tts = gTTS(text=text, lang='en')
-    tts.save("output.mp3")  # Save the audio as an MP3 file
-    st.audio("output.mp3", format="audio/mp3")  # Play the audio file in the browser
-    os.remove("output.mp3")  # Clean up the file after use
+    tts.save(filename)
+
+    # Load and play the audio file using pygame
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play()
+
+    # Wait until the audio finishes playing
+    while pygame.mixer.music.get_busy():
+        time.sleep(0.1)
+
+    # Stop the music and forcefully release the file
+    pygame.mixer.music.stop()
+    pygame.mixer.quit()  # Ensure pygame releases resources
+
+    # **Critical Step:** Explicitly close the file before deleting
+    pygame.mixer.init()  # Re-initialize to avoid crashes
+    time.sleep(0.5)  # Ensure file is fully released
+
+    try:
+        os.remove(filename)
+        print(f"{filename} deleted successfully!")
+    except PermissionError:
+        print(f"Could not delete {filename}. Try manually removing it.")
 
 # Chat Interface
 for msg in st.session_state.messages:
@@ -173,5 +209,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 
 

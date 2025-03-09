@@ -42,7 +42,7 @@ st.write("### Powered by Whisper, g4f, and gTTS")
 st.warning(
     "⚠️ **Note:** The 'Speak' option requires local execution. "
     "If you're using this app on Streamlit Cloud, text-to-speech (TTS) will not work. "
-    "To enable this feature, fork the app’s [GitHub repository](your-github-repo-link) "
+    "To enable this feature, fork the app’s [GitHub repository](https://github.com/renaasebastiann/medical-voice-assistant) "
     "and run it locally using:\n\n"
     "```bash\n"
     "streamlit run app.py\n"

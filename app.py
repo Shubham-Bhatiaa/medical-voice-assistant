@@ -39,6 +39,18 @@ if "messages" not in st.session_state:
 # Streamlit App UI
 st.title("🧑‍⚕️ Medical Voice Assistant")
 st.write("### Powered by Whisper, g4f, and gTTS")
+st.warning(
+    "⚠️ **Note:** The 'Speak' option requires local execution. "
+    "If you're using this app on Streamlit Cloud, text-to-speech (TTS) will not work. "
+    "To enable this feature, fork the app’s [GitHub repository](https://github.com/renaasebastiann/medical-voice-assistant) "
+    "and run it locally using:\n\n"
+    "
+bash\n"
+    "streamlit run app.py\n"
+    "
+",
+)
+
 
 # Function to record audio
 def record_audio(filename="input.wav", duration=4, rate=16000):
@@ -103,10 +115,19 @@ def get_medical_response(prompt):
 def speak(text):
     tts = gTTS(text=text, lang='en')
     tts.save("output.mp3")
-    os.system("mpg321 output.mp3")
-    tts.save("output.mp3")  # Save the audio as an MP3 file
-    st.audio("output.mp3", format="audio/mp3")  # Play the audio file in the browser
-    os.remove("output.mp3")  # Clean up the file after use
+
+    # Generate HTML audio tag with autoplay
+    audio_html = f"""
+    <audio autoplay hidden>
+        <source src="output.mp3" type="audio/mp3">
+    </audio>
+    """
+
+    # Display in Streamlit using markdown
+    st.markdown(audio_html, unsafe_allow_html=True)
+
+    # Cleanup file after playing
+    os.remove("output.mp3")
 
 # Chat Interface
 for msg in st.session_state.messages:

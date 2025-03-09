@@ -9,6 +9,9 @@ import subprocess
 import asyncio
 import nest_asyncio
 from gtts import gTTS 
+import transformers
+print("Transformers version:", transformers.__version__)
+
 
 # Force install the correct version of transformers
 subprocess.run(["pip", "install", "--no-cache-dir", "transformers==4.38.2"])

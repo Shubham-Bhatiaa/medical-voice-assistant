@@ -10,4 +10,3 @@ g4f
 nest_asyncio
 gTTS
 pip==25.0.1
-pygame

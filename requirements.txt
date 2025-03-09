@@ -2,7 +2,7 @@ numpy<2.0
 streamlit
 torch==2.2.0
 torchaudio
-transformers
+transformers==4.38.2 
 pyaudio
 pyttsx3
 wave

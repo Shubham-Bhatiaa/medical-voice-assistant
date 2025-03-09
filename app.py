@@ -1,8 +1,6 @@
 import streamlit as st
 import torch
 import torchaudio
-from transformers import AutoModelForCausalLM, AutoTokenizer
-from transformers.models.whisper import WhisperProcessor, WhisperForConditionalGeneration
 import g4f
 import wave
 import pyaudio
@@ -11,6 +9,14 @@ import subprocess
 import asyncio
 import nest_asyncio
 from gtts import gTTS 
+
+# Force install the correct version of transformers
+subprocess.run(["pip", "install", "--no-cache-dir", "transformers==4.38.2"])
+
+# Now import
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers.models.whisper import WhisperProcessor, WhisperForConditionalGeneration
+
 
 nest_asyncio.apply()  # Allows asyncio to work in Streamlit
 

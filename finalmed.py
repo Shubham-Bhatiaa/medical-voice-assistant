@@ -9,19 +9,18 @@ import os
 import subprocess
 import asyncio
 import nest_asyncio
-from gtts import gTTS
+import pyttsx3  # ✅ Replaced gTTS with pyttsx3 for local TTS
 
-nest_asyncio.apply()  # This helps run Streamlit and asyncio concurrently
+nest_asyncio.apply()  # Helps run Streamlit and asyncio concurrently
+
 try:
     from transformers import WhisperProcessor, WhisperForConditionalGeneration
 except ImportError:
     subprocess.run(["pip", "install", "transformers"])
     from transformers import WhisperProcessor, WhisperForConditionalGeneration
 
-
 # Load Whisper Model
 device = "cpu"  # Force CPU usage
-
 whisper_model_name = "openai/whisper-tiny"
 processor = WhisperProcessor.from_pretrained(whisper_model_name)
 whisper_model = WhisperForConditionalGeneration.from_pretrained(whisper_model_name).to(device)
@@ -31,13 +30,28 @@ medical_model_name = "stanford-crfm/BioMedLM"
 tokenizer = AutoTokenizer.from_pretrained(medical_model_name)
 medical_model = AutoModelForCausalLM.from_pretrained(medical_model_name).to(device)
 
+# Initialize pyttsx3 for local text-to-speech
+engine = pyttsx3.init()
+
 # Memory for conversation history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # Streamlit App UI
 st.title("🧑‍⚕️ Medical Voice Assistant")
-st.write("### Powered by Whisper, g4f, and gTTS")
+st.write("### Powered by Whisper, g4f, and pyttsx3")
+
+# Show a warning for Streamlit Cloud users
+st.warning(
+    "⚠️ **Note:** The 'Speak' option requires local execution. "
+    "If you're using this app on Streamlit Cloud, text-to-speech (TTS) will not work. "
+    "To enable this feature, fork the app’s [GitHub repository](your-github-repo-link) "
+    "and run it locally using:\n\n"
+    "```bash\n"
+    "streamlit run app.py\n"
+    "```",
+    icon="⚠️"
+)
 
 # Function to record audio
 def record_audio(filename="input.wav", duration=4, rate=16000):
@@ -98,12 +112,11 @@ def get_medical_response(prompt):
     output = medical_model.generate(**inputs, max_length=200)
     return tokenizer.decode(output[0], skip_special_tokens=True)
 
-# Function to speak using gTTS (Text-to-Speech)
+# Function to speak using pyttsx3
 def speak(text):
-    tts = gTTS(text=text, lang='en')
-    tts.save("output.mp3")  # Save the audio as an MP3 file
-    st.audio("output.mp3", format="audio/mp3")  # Play the audio file in the browser
-    os.remove("output.mp3")  # Clean up the file after use
+    """Convert text to speech using pyttsx3 (works only locally)."""
+    engine.say(text)
+    engine.runAndWait()
 
 # Chat Interface
 for msg in st.session_state.messages:
@@ -124,7 +137,7 @@ if user_input:
     with st.chat_message("assistant"):
         st.write(ai_response)
 
-    # Speak AI response
+    # Speak AI response (only works locally)
     speak(ai_response)
 
 # Add Mic Button for Voice Input (At the Bottom)
@@ -143,7 +156,7 @@ if st.button("🎙️ Speak"):
     with st.chat_message("assistant"):
         st.write(ai_response)
 
-    # Speak AI response
+    # Speak AI response (only works locally)
     speak(ai_response)
 
 st.markdown(
@@ -162,4 +175,5 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 

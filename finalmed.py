@@ -10,7 +10,6 @@ import subprocess
 import asyncio
 import nest_asyncio
 from gtts import gTTS 
-import pygame
 
 nest_asyncio.apply()  # Allows asyncio to work in Streamlit
 
@@ -113,44 +112,30 @@ def get_medical_response(prompt):
 
 import os
 import time
-import pygame
 from gtts import gTTS
 
 # Initialize pygame mixer
-pygame.mixer.init()
-
 def speak(text):
     filename = "output.mp3"
 
-    # If the file exists, try removing it before creating a new one
     if os.path.exists(filename):
         os.remove(filename)
 
-    # Generate speech and save it as an mp3 file
     tts = gTTS(text=text, lang='en')
     tts.save(filename)
 
-    # Load and play the audio file using pygame
-    pygame.mixer.music.load(filename)
-    pygame.mixer.music.play()
+    # Convert mp3 to base64 for auto-playing in HTML
+    import base64
+    with open(filename, "rb") as f:
+        audio_base64 = base64.b64encode(f.read()).decode()
 
-    # Wait until the audio finishes playing
-    while pygame.mixer.music.get_busy():
-        time.sleep(0.1)
-
-    # Stop the music and forcefully release the file
-    pygame.mixer.music.stop()
-    pygame.mixer.quit()  # Ensure pygame releases resources
-
-    # **Critical Step:** Explicitly close the file before deleting
-    pygame.mixer.init()  # Re-initialize to avoid crashes
-    time.sleep(0.5)  # Ensure file is fully released
-
-    try:
-        os.remove(filename)
-        print(f"{filename} deleted successfully!")
-    except PermissionError:
-        print(f"Could not delete {filename}. Try manually removing it.")
+    # HTML to auto-play audio
+    audio_html = f"""
+        <audio autoplay>
+            <source src="data:audio/mp3;base64,{audio_base64}" type="audio/mp3">
+        </audio>
+    """
+    st.markdown(audio_html, unsafe_allow_html=True)
 
 # Chat Interface
 for msg in st.session_state.messages:

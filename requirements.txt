@@ -1,7 +1,8 @@
---upgrade --force-reinstall
+pip==25.0.1
 numpy<2.0
-streamlit
 torch==2.2.0
+--upgrade --force-reinstall
+streamlit
 torchaudio
 transformers 
 pyaudio
@@ -10,4 +11,4 @@ wave
 g4f
 nest_asyncio
 gTTS
-pip==25.0.1
+

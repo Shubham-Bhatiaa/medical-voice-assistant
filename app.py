@@ -1,7 +1,8 @@
 import streamlit as st
 import torch
 import torchaudio
-from transformers import WhisperProcessor, WhisperForConditionalGeneration, AutoModelForCausalLM, AutoTokenizer
+from transformers AutoModelForCausalLM, AutoTokenizer
+from transformers.models.whisper import WhisperProcessor, WhisperForConditionalGeneration
 import g4f
 import wave
 import pyaudio

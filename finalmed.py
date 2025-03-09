@@ -47,8 +47,7 @@ st.warning(
     "```bash\n"
     "streamlit run app.py\n"
     "```",
-    icon="⚠️"
-)
+    )
 
 # Function to record audio
 def record_audio(filename="input.wav", duration=4, rate=16000):

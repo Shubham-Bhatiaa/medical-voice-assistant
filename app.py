@@ -12,34 +12,28 @@ import asyncio
 import nest_asyncio
 from gtts import gTTS
 
-# Apply nest_asyncio to prevent asyncio issues in Streamlit
 nest_asyncio.apply()
 
-# Ensure transformers are installed
 try:
     from transformers import WhisperProcessor, WhisperForConditionalGeneration
 except ImportError:
     subprocess.run(["pip", "install", "transformers"])
 
-# Load Whisper Model
-device = "cpu"  # Force CPU usage
+device = "cpu"  
 whisper_model_name = "openai/whisper-tiny"
 processor = WhisperProcessor.from_pretrained(whisper_model_name)
 whisper_model = WhisperForConditionalGeneration.from_pretrained(whisper_model_name).to(device)
 
-# Load Medical AI Model
 medical_model_name = "stanford-crfm/BioMedLM"
 tokenizer = AutoTokenizer.from_pretrained(medical_model_name)
 medical_model = AutoModelForCausalLM.from_pretrained(medical_model_name).to(device)
 
-# Memory for conversation history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Streamlit App UI
 st.title("🧑‍⚕️ Medical Voice Assistant")
 st.write("### Powered by Whisper, g4f, and gTTS")
-# Show a warning for Streamlit Cloud users
+
 st.warning(
     "⚠️ **Note:** The 'Speak' option requires local execution. "
     "If you're using this app on Streamlit Cloud, text-to-speech (TTS) will not work. "
@@ -50,8 +44,6 @@ st.warning(
     "```",
 )
 
-
-# Function to record audio
 def record_audio(filename="input.wav", duration=4, rate=16000):
     chunk = 1024
     format = pyaudio.paInt16
@@ -81,7 +73,7 @@ def record_audio(filename="input.wav", duration=4, rate=16000):
 
     return filename
 
-# Function to transcribe audio
+
 def transcribe_audio(filename="input.wav"):
     audio_input, _ = torchaudio.load(filename)
     input_features = processor(audio_input.squeeze(0), sampling_rate=16000, return_tensors="pt").input_features
@@ -89,7 +81,6 @@ def transcribe_audio(filename="input.wav"):
     transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)[0]
     return transcription.lower()
 
-# Function to get AI response
 def get_ai_response(prompt):
     response_generator = g4f.ChatCompletion.create(
         model=g4f.models.default,
@@ -99,41 +90,36 @@ def get_ai_response(prompt):
 
     response_text = ""
     for chunk in response_generator:
-        if isinstance(chunk, str):  # ✅ Ensure only string responses are processed
+        if isinstance(chunk, str): 
             response_text += chunk  
 
     return response_text
 
-# Function to get Medical AI response
+
 def get_medical_response(prompt):
     inputs = tokenizer(prompt, return_tensors="pt")
     output = medical_model.generate(**inputs, max_length=200)
     return tokenizer.decode(output[0], skip_special_tokens=True)
 
-# Function to speak using gTTS (Text-to-Speech)
 def speak(text):
     tts = gTTS(text=text, lang='en')
     tts.save("output.mp3")
 
-    # Generate HTML audio tag with autoplay
     audio_html = f"""
     <audio autoplay hidden>
         <source src="output.mp3" type="audio/mp3">
     </audio>
     """
 
-    # Display in Streamlit using markdown
     st.markdown(audio_html, unsafe_allow_html=True)
 
-    # Cleanup file after playing
     os.remove("output.mp3")
 
-# Chat Interface
+
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-# Text Input Option (First)
 user_input = st.chat_input("Type your message...")
 
 if user_input:
@@ -147,10 +133,9 @@ if user_input:
     with st.chat_message("assistant"):
         st.write(ai_response)
 
-    # Speak AI response
+   
     speak(ai_response)
 
-# Add Mic Button for Voice Input (At the Bottom)
 if st.button("🎙️ Speak"):
     audio_file = record_audio()
     user_input = transcribe_audio(audio_file)
@@ -166,7 +151,7 @@ if st.button("🎙️ Speak"):
     with st.chat_message("assistant"):
         st.write(ai_response)
 
-    # Speak AI response
+
     speak(ai_response)
 
 st.markdown(

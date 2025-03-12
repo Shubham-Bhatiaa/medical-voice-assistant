@@ -1,14 +1,11 @@
 import streamlit as st
 import torch
-import torchaudio
 from transformers import WhisperProcessor, WhisperForConditionalGeneration, AutoModelForCausalLM, AutoTokenizer
 import g4f
 import wave
 import pyaudio
 import os
-import pyttsx3
 import subprocess
-import asyncio
 import nest_asyncio
 from gtts import gTTS
 
@@ -75,11 +72,20 @@ def record_audio(filename="input.wav", duration=4, rate=16000):
 
 
 def transcribe_audio(filename="input.wav"):
-    audio_input, _ = torchaudio.load(filename)
-    input_features = processor(audio_input.squeeze(0), sampling_rate=16000, return_tensors="pt").input_features
+    # Use librosa or soundfile instead of torchaudio
+    import soundfile as sf
+    import numpy as np
+
+    audio_input, sample_rate = sf.read(filename)
+    audio_input = torch.tensor(audio_input).unsqueeze(0)
+
+    input_features = processor(
+        audio_input.squeeze(0), sampling_rate=16000, return_tensors="pt"
+    ).input_features
     predicted_ids = whisper_model.generate(input_features)
     transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)[0]
     return transcription.lower()
+
 
 def get_ai_response(prompt):
     response_generator = g4f.ChatCompletion.create(
@@ -170,7 +176,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-
-
-

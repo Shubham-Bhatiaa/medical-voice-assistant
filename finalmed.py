@@ -8,25 +8,20 @@ import pyaudio
 import os
 import pyttsx3
 
-# Load Whisper Model
 whisper_model_name = "openai/whisper-tiny"
 processor = WhisperProcessor.from_pretrained(whisper_model_name)
 whisper_model = WhisperForConditionalGeneration.from_pretrained(whisper_model_name)
 
-# Load Medical AI Model
 medical_model_name = "stanford-crfm/BioMedLM"
 tokenizer = AutoTokenizer.from_pretrained(medical_model_name)
 medical_model = AutoModelForCausalLM.from_pretrained(medical_model_name)
 
-# Memory for conversation history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Streamlit App UI
 st.title("🧑‍⚕️ Medical Voice Assistant")
 st.write("###  Powered by Whisper, g4f, and Pyttsx3")
 
-# Function to record audio
 def record_audio(filename="input.wav", duration=4, rate=16000):
     chunk = 1024
     format = pyaudio.paInt16
@@ -56,7 +51,6 @@ def record_audio(filename="input.wav", duration=4, rate=16000):
     
     return filename
 
-# Function to transcribe audio
 def transcribe_audio(filename="input.wav"):
     audio_input, _ = torchaudio.load(filename)
     input_features = processor(audio_input.squeeze(0), sampling_rate=16000, return_tensors="pt").input_features
@@ -64,7 +58,6 @@ def transcribe_audio(filename="input.wav"):
     transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)[0]
     return transcription.lower()
 
-# Function to get AI response
 def get_ai_response(prompt):
     response_generator = g4f.ChatCompletion.create(
         model=g4f.models.default,
@@ -79,24 +72,21 @@ def get_ai_response(prompt):
 
     return response_text
 
-# Function to get Medical AI response
 def get_medical_response(prompt):
     inputs = tokenizer(prompt, return_tensors="pt")
     output = medical_model.generate(**inputs, max_length=200)
     return tokenizer.decode(output[0], skip_special_tokens=True)
 
-# Function to speak using Pyttsx3
 def speak(text):
     engine = pyttsx3.init()
     engine.say(text)
     engine.runAndWait()
 
-# Chat Interface
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-# Text Input Option (First)
+
 user_input = st.chat_input("Type your message...")
 
 if user_input:
@@ -129,7 +119,7 @@ if st.button("🎙️ Speak"):
     with st.chat_message("assistant"):
         st.write(ai_response)
 
-    # Speak AI response
+    
     speak(ai_response)
 st.markdown(
     """
